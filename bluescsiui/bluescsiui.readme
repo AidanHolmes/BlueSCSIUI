@@ -1,0 +1,88 @@
+Short: BlueSCSI Net Info Viewer
+Kurz: BlueSCSI Net Info Viewer
+Uploader: amiga@aidanholmes.co.uk (Aidan Holmes)
+Author: amiga@aidanholmes.co.uk (Aidan Holmes)
+Type: comm/net
+Version: 1.0
+Requires: BlueSCSIv2
+Architecture: m68k-amigaos >= v36
+Distribution: NA
+
+About
+-----
+UI to provide information from the emulated BlueSCSIv2 Daynaport device 
+and show on an Amiga. 
+
+Edit the bsui.info tool types and alter the DEVICE and UNIT values according
+to your driver.
+e.g.
+DEVICE=scsi.device
+UNIT=-1
+
+You can set the actual unit number for the driver or use -1 to auto detect.
+Initial screen will show an error if the driver details are incorrect. 
+
+UI elements:
++ MAC address shown for your BlueSCSI
++ List of discovered access points - press Scan button to populate
++ Active AP - shows what you may be connected to. This is not too
+              accurate
++ Scan      - run a wifi access point scan
++ ManualAP  - opens up an empty connect window to enter hidden APs
++ Connect   - select row from found APs and SSID will populate here.
+              You must enter a valid password
+
+There is a single menu item (right click option) to access the 
+scsidayna.device settings. If you do not have a config then defaults
+will be shown. Note that the config is independent of the bsui app.
+
+You can use this application to configure connections to access points 
+without needing to set WiFi SSID and keys on the SD card or in the 
+scsidayna.device config. Ideal settings should set the driver to 
+not auto connection (value 0 in config) and have no SSID or key set. 
+Scan for APs and connect through the UI. You can then open your connection
+in your chosen network app (Roadshow, AMITCP, Miami). 
+If you change the AP whilst connected then your connection will fail. 
+Shutdown the connection and restart to access a new AP. 
+
+App Install
+--------------
+Copy bsui and bsui.info to any drawer. Run from the icon, or direct from
+command line.
+
+Note that command line will need you to specify the driver name and unit.
+
+
+Versions
+---------
+
+1.0 - 21 Oct 2024: Initial version, probably loads of bugs.
+
+
+IMPORTANT NOTE:
+---------------
+Testing has been conducted with limited devices and configurations.
+Unforseen issues, data loss or other circumstances could occur through
+use of this application. Devices are queried directly which may cause
+unexpected behaviour. Try accurate unit values if issues occur. 
+
+Legal Information
+-----------------
+Net Information Viewer (bsui) is Copyright (c) 2024 Aidan Holmes
+
+Redistribution and use of the binaries are permitted as long as the 
+file names are retained, binaries are unmodifed 
+and the above copyright notice is reproduced.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND
+CONTRIBUTORS ``AS IS'' AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. 
+IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+SUCH DAMAGE.
