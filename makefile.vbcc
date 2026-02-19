@@ -1,0 +1,61 @@
+# Makefile for VBCC build for BlueSCSI UI
+# Requires a makefile.master.vbcc to build the Release and Debug targets
+
+APPNAME = bluescsiui
+BINNAME = bsui
+VERSIONMAJOR = 1
+VERSIONMINOR = 1
+DEVDATE = \"18.02.2026\"
+LHADIR = $(APPNAME)
+RELEASEDIR = Release
+DEBUGDIR = Debug
+RELEASEMK = $(RELEASEDIR)/makefile.vbcc
+DEBUGMK = $(DEBUGDIR)/makefile.vbcc
+TEMPLATEMAKEFILE = makefile.master.vbcc
+
+# This build requires an install of the CyberGraphics library (such as P96) and the dev headers. 
+# Change to point to location of headers.
+INCDEPENDS= -I\/opt\/amiga\/NDK3.2\/Include_H
+
+# optimised and release version
+PRODCOPTS = +aos68k -lamiga -O2 $(INCDEPENDS)
+
+# debug version build options
+DBGCOPTS = +aos68k -lamiga -g $(INCDEPENDS) -D_DEBUG -DDEBUG_SERIAL
+
+.PHONY: all clean lib
+
+all: $(RELEASEMK) $(DEBUGMK) lib
+	cd $(RELEASEDIR) && make -f makefile.vbcc
+	cd $(DEBUGDIR) && make -f makefile.vbcc
+
+clean:
+	cd $(RELEASEDIR) && make -f makefile.vbcc clean
+	cd $(DEBUGDIR) && make -f makefile.vbcc clean
+	rm -f $(APPNAME).tar.gz $(APPNAME)/$(BINNAME)
+
+lib: $(APPNAME).tar.gz
+
+$(RELEASEMK): $(TEMPLATEMAKEFILE) makefile.vbcc
+	mkdir -p $(RELEASEDIR)
+	sed -r 's/^SCOPTS.+$$/SCOPTS = $(PRODCOPTS)/' $(TEMPLATEMAKEFILE) > $(RELEASEMK)
+	sed -ri 's/^BINNAME.+$$/BINNAME = $(BINNAME)/' $(RELEASEMK)
+	sed -ri 's/^VERSIONMAJOR.+$$/VERSIONMAJOR = $(VERSIONMAJOR)/' $(RELEASEMK)
+	sed -ri 's/^VERSIONMINOR.+$$/VERSIONMINOR = $(VERSIONMINOR)/' $(RELEASEMK) 
+	sed -ri 's/^DEVDATE.+$$/DEVDATE = $(DEVDATE)/' $(RELEASEMK) 
+	sed -ri 's/^APPNAME.+$$/APPNAME = $(APPNAME)/' $(RELEASEMK)
+	sed -ri 's/^BUILD.+$$/BUILD = Release/' $(RELEASEMK) 
+	
+$(DEBUGMK): $(TEMPLATEMAKEFILE) makefile.vbcc
+	mkdir -p $(DEBUGDIR)
+	sed -r 's/^SCOPTS.+$$/SCOPTS = $(DBGCOPTS)/' $(TEMPLATEMAKEFILE) > $(DEBUGMK)
+	sed -ri 's/^BINNAME.+$$/BINNAME = $(BINNAME)/' $(DEBUGMK) 
+	sed -ri 's/^VERSIONMAJOR.+$$/VERSIONMAJOR = $(VERSIONMAJOR)/' $(DEBUGMK)
+	sed -ri 's/^VERSIONMINOR.+$$/VERSIONMINOR = $(VERSIONMINOR)/' $(DEBUGMK)
+	sed -ri 's/^DEVDATE.+$$/DEVDATE = $(DEVDATE)/' $(DEBUGMK) 
+	sed -ri 's/^APPNAME.+$$/APPNAME = $(APPNAME)/' $(DEBUGMK)
+	sed -ri 's/^BUILD.+$$/BUILD = Debug/' $(DEBUGMK)
+
+$(APPNAME).tar.gz: $(RELEASEMK)
+	cd $(RELEASEDIR) && make -f makefile.vbcc lib
+	tar zcvf $(APPNAME).tar.gz $(LHADIR)

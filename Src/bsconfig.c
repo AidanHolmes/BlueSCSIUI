@@ -12,7 +12,7 @@
 #define DOSBase conf->dosbase
 #define UtilityBase conf->utilitybase
 
-static char* CONFIG_TOKENS[NUM_TOKENS] = {"DEVICE","DEVICEID","PRIORITY","MODE","AUTOCONNECT","SSID","KEY"};
+static char* CONFIG_TOKENS[NUM_TOKENS] = {"DEVICE","DEVICEID","PRIORITY","MODE","AUTOCONNECT","SSID","KEY","DATASIZE","DEBUG"};
 
 void muldiv(USHORT num, USHORT divide, USHORT* result, USHORT* mod) {
     *result = 0;
@@ -122,6 +122,8 @@ void applyDefaults(struct BlueScsiConfig *conf, char *device, int unit)
     conf->taskPriority = 0;  // -128 to 127  - probably should be 0 but works faster set as 1!
     conf->scsiMode = 1;      // Driver mode. 0=DynaPORT, 1=24 Byte Patch (scsi.device), 2=Single Write Mode (gvpscsi.device)
     conf->autoConnect = 0;   // auto connect to the WIFI?
+	conf->datasize = 8192;
+	conf->debug = 0;
     strcpy(conf->ssid, "");
     strcpy(conf->key, "");
 }
@@ -149,10 +151,12 @@ void closeBlueSCSIConfig(struct BlueScsiConfig *conf)
 	if (conf){
 		if (conf->dosbase){
 			CloseLibrary(conf->dosbase);
+			conf->dosbase = NULL;
 		}
 		
 		if (conf->utilitybase){
 			CloseLibrary(conf->utilitybase);
+			conf->utilitybase = NULL;
 		}
 		
 		memset(conf, 0, sizeof(struct BlueScsiConfig));
@@ -188,7 +192,11 @@ BOOL loadBlueSCSIConfig(struct BlueScsiConfig *conf, char *device, int unit)
 	char* value;
 	UWORD token = 0;
 	
-    if (fh = Open("ENV:scsidayna.prefs",MODE_OLDFILE)) {
+	// Apply defaults before reading config.
+	// Config will then override any settings in the file and leave others as default
+	applyDefaults(conf,device,unit);
+    
+	if (fh = Open("ENV:scsidayna.prefs",MODE_OLDFILE)) {
         while (FGets(fh, buffer, 128)) {
             if (tokeniseSetting(buffer, &value)) {
                 // find a match
@@ -209,6 +217,8 @@ BOOL loadBlueSCSIConfig(struct BlueScsiConfig *conf, char *device, int unit)
                             case 4: conf->autoConnect = atoi(value); break;
                             case 5: strcpy_s(conf->ssid, value, 64);rtrimValue(conf->ssid); break;
                             case 6: strcpy_s(conf->key, value, 64); rtrimValue(conf->key); break;
+							case 7: conf->datasize = atoi(value); break;
+							case 8: conf->debug = atoi(value); break;
                             default: matches--; break;
                         }
                         break;
@@ -218,8 +228,6 @@ BOOL loadBlueSCSIConfig(struct BlueScsiConfig *conf, char *device, int unit)
         }
         Close(fh);
     }
-	
-	if (matches < 1) applyDefaults(conf, device, unit);
 
     // If no mode was set, but a GVP device was specified then jump to mode 2. It will default to 1 anyway
     if (!modeConfigured) {
@@ -253,6 +261,8 @@ BOOL saveBlueSCSIConfig(struct BlueScsiConfig *conf, BOOL saveToENV)
                 case 4:  _ustoa(conf->autoConnect, tmp);  if (!FPuts(fh, tmp)) good = FALSE; break;
                 case 5:  if (!FPuts(fh, conf->ssid)) good = FALSE; break;
                 case 6:  if (!FPuts(fh, conf->key)) good = FALSE; break;
+				case 7:  _ustoa(conf->datasize, tmp);  if (!FPuts(fh, tmp)) good = FALSE; break;
+				case 8:  _ustoa(conf->debug, tmp);  if (!FPuts(fh, tmp)) good = FALSE; break;
             }
             if (!FPuts(fh, "\n")) good = FALSE;
         }

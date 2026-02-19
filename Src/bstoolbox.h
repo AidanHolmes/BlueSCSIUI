@@ -40,6 +40,7 @@ struct blueWifi
 	struct MsgPort *port;
 	BOOL enabled;
 	UBYTE mac[8];
+	UWORD version ;
 	struct SCSIWifiEntryList scanresults ;
 	struct SCSIWifiInfo info;
 };

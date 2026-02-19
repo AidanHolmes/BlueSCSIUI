@@ -1,0 +1,51 @@
+# Makefile for VBCC build for BlueSCSI UI
+VCROOTBIN = $(VBCC)/bin
+CC = $(VCROOTBIN)/vc
+VASM = $(VCROOTBIN)/vasmm68k_mot
+SCOPTS = +aos68k -lamiga -O2 -I/opt/amiga/NDK3.2/Include_H
+
+APPNAME = bluescsiui
+BINNAME = bsui
+VERSIONMAJOR = 1
+VERSIONMINOR = 1
+DEVDATE = "18.02.2026"
+AMIGAUIHOME=../../lib/amigaui
+BUILD = Release
+
+AMIGAUILIBH=$(AMIGAUIHOME)/Src
+AMIGAUILIBBUILDDIR=$(AMIGAUIHOME)/$(BUILD)/Bin/
+AMIGAUILIB=ui
+
+SRC = ../Src
+BIN = Bin
+OBJ = Obj
+OBJSBIN = $(OBJ)/bsui.o $(OBJ)/bstoolbox.o $(OBJ)/bsconfig.o
+ALLOBJS = $(OBJSBIN)
+
+EXTRA_H = -I$(AMIGAUILIBH)
+DEFSTD = -DVERSIONMAJOR=$(VERSIONMAJOR) -DVERSIONMINOR=$(VERSIONMINOR) -DDEVDATE=$(DEVDATE)
+CFLAGS = -I$(VBCC)/targets/m68k-amigaos/include $(SCOPTS) $(DEFSTD) $(EXTRA_H) -v
+
+.PHONY: all dirs clean install lib
+
+all: dirs $(BIN)/$(BINNAME)
+
+dirs:
+	mkdir -p $(BIN)
+	mkdir -p $(OBJ)
+	
+clean:
+	rm -f $(OBJ)/*.o $(OBJ)/*.asm $(BIN)/*.lnk $(BIN)/*.info $(BIN)/*.map $(BIN)/*.gst $(BIN)/$(BINNAME)
+
+install: $(BIN)/$(BINNAME)
+	cp $(BIN)/$(BINNAME) C:
+	
+lib: $(BIN)/$(BINNAME)
+	cp $(BIN)/$(BINNAME) ../$(APPNAME)/$(BINNAME)
+	
+$(BIN)/$(BINNAME): $(OBJSAUD) $(OBJSBIN)
+	$(CC) $(CFLAGS) -o $@ $(OBJSAUD) $(OBJSBIN) -L$(AMIGAUILIBBUILDDIR) -l$(AMIGAUILIB)
+	
+$(ALLOBJS): $(OBJ)/%.o: $(SRC)/%.c
+	$(CC) $(CFLAGS) -c $^ -o $@
+	

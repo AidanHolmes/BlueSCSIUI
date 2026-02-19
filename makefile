@@ -2,14 +2,15 @@
 APPNAME = bluescsiui
 BINNAME = bsui
 VERSIONMAJOR = 1
-VERSIONMINOR = 0
-DEVDATE = "12.07.2025"
+VERSIONMINOR = 1
+DEVDATE = "18.02.2026"
 
-LHADIR = $(APPNAME)
 RELEASEDIR = Release
 DEBUGDIR = Debug
 RELEASE = $(RELEASEDIR)/makefile
 DEBUG = $(DEBUGDIR)/makefile
+
+TEMPLATEMAKEFILE = makefile.master
 
 # optimised and release version
 PRODCOPTS = OPTIMIZE Optimizerinline OptimizerComplexity=10 OptimizerGlobal OptimizerDepth=1 OptimizerTime OptimizerSchedule OptimizerPeephole PARAMETERS=stack
@@ -45,15 +46,27 @@ clean:
 		smake clean
 		cd /
 		<
-	delete $(APPNAME).lha
+	- delete $(APPNAME).lha $(APPNAME)/$(BINNAME)
 	
-$(RELEASE): makefile.master makefile
-	copy makefile.master $(RELEASE)
+$(RELEASE): $(TEMPLATEMAKEFILE) makefile
+	copy $(TEMPLATEMAKEFILE) $(RELEASE)
 	splat -o "^SCOPTS.+\$" "SCOPTS = $(PRODCOPTS)" $(RELEASE)
+	splat -o "^BINNAME.+\$" "BINNAME = $(BINNAME)" $(RELEASE)
+	splat -o "^VERSIONMAJOR.+\$" "VERSIONMAJOR = $(VERSIONMAJOR)" $(RELEASE)
+	splat -o "^VERSIONMINOR.+\$" "VERSIONMINOR = $(VERSIONMINOR)" $(RELEASE)
+#	splat -o "^DEVDATE.+\$" "DEVDATE = $(DEVDATE)" $(RELEASE)
+	splat -o "^BUILD.+\$" "BUILD = Release" $(RELEASE)
+	splat -o "^APPNAME.+\$" "APPNAME = $(APPNAME)" $(RELEASE)
 	
-$(DEBUG): makefile.master makefile
-	copy makefile.master $(DEBUG)
+$(DEBUG): $(TEMPLATEMAKEFILE) makefile
+	copy $(TEMPLATEMAKEFILE) $(DEBUG)
 	splat -o "^SCOPTS.+\$" "SCOPTS = $(DBGCOPTS)" $(DEBUG)
+	splat -o "^BINNAME.+\$" "BINNAME = $(BINNAME)" $(DEBUG)
+	splat -o "^VERSIONMAJOR.+\$" "VERSIONMAJOR = $(VERSIONMAJOR)" $(DEBUG)
+	splat -o "^VERSIONMINOR.+\$" "VERSIONMINOR = $(VERSIONMINOR)" $(DEBUG)
+#	splat -o "^DEVDATE.+\$" "DEVDATE = $(DEVDATE)" $(DEBUG)
+	splat -o "^BUILD.+\$" "BUILD = Debug" $(DEBUG)
+	splat -o "^APPNAME.+\$" "APPNAME = $(APPNAME)" $(DEBUG)
 	
 $(APPNAME).lha: $(RELEASE)
 	execute <<
@@ -61,4 +74,4 @@ $(APPNAME).lha: $(RELEASE)
 		smake lib VERSIONMAJOR=$(VERSIONMAJOR) VERSIONMINOR=$(VERSIONMINOR) DEVDATE=$(DEVDATE) APPNAME=$(APPNAME) BINNAME=$(BINNAME)
 		cd /
 		<
-	lha -Qr -x u $(APPNAME).lha $(LHADIR)
+	lha -Qr -x u $(APPNAME).lha $(APPNAME)

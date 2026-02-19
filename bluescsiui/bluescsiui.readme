@@ -3,7 +3,7 @@ Kurz: BlueSCSI Net Info Viewer
 Uploader: amiga@aidanholmes.co.uk (Aidan Holmes)
 Author: amiga@aidanholmes.co.uk (Aidan Holmes)
 Type: comm/net
-Version: 1.0
+Version: 1.1
 Requires: BlueSCSIv2
 Architecture: m68k-amigaos >= v36
 Distribution: NA
@@ -25,16 +25,37 @@ Initial screen will show an error if the driver details are incorrect.
 UI elements:
 + MAC address shown for your BlueSCSI
 + List of discovered access points - press Scan button to populate
-+ Active AP - shows what you may be connected to. This is not too
-              accurate
-+ Scan      - run a wifi access point scan
-+ ManualAP  - opens up an empty connect window to enter hidden APs
-+ Connect   - select row from found APs and SSID will populate here.
-              You must enter a valid password
++ Active AP   - shows what you may be connected to. This is not too
+                accurate
++ SCSI Device - shows discovered device name - DynaPort is the old
+                device and AmigaNET is the faster and new device.
++ Scan        - run a wifi access point scan
++ Config      - access the configuration for the dynaport driver
++ ManualAP    - opens up an empty connect window to enter hidden APs
++ Connect     - select row from found APs and SSID will populate here.
+                You must enter a valid password
 
-There is a single menu item (right click option) to access the 
-scsidayna.device settings. If you do not have a config then defaults
-will be shown. Note that the config is independent of the bsui app.
+First time use will ask you to open configuration and setup your DynaPort.
+Select Yes to open, or access via the Config button or menu item. 
+From version 1.1 the config set for SCSIDynaPort will also be used by this
+test application. Changing settings will reattempt connection and may work or
+fail. The DEVICE and UNIT set in tooltips will only be used if no config exists
+at all. 
+
+Existing installs can run this UI tool to review and set the new configuration
+options for data size and debug. These are already defaulted to suitable settings,
+so just click Save to update your configuration for the device driver to use.
+
+Once connected, the interface will show your MAC and info regarding the discovered 
+device. If device shows"DynaPort" then it's the old network device, which is missing
+Amiga specific workarounds and is slower. If it shows "AmigaNET" then this is the
+newer device and works much faster. 
+Check the devices setup on your SD card if you want AmigaNET instead of DynaPort.
+
+The UI now detects if scsidynaport.device is already running and will tell you if 
+you change any config. A reboot is needed if you change anything whilst the network
+device is in-use. You may be able to run 'avail flush' in a shell to also flush out
+the unused device if you've disconnected from the network. 
 
 You can use this application to configure connections to access points 
 without needing to set WiFi SSID and keys on the SD card or in the 
@@ -57,6 +78,11 @@ Versions
 ---------
 
 1.0 - 21 Oct 2024: Initial version, probably loads of bugs.
+1.1 - 19 Feb 2026: Update for new AmigaNET device and configuration.
+                   2 new config options for data size and debug.
+				   Config options access more obvious through use of button.
+				   Config for device and unit now taken from configuration
+				   file.
 
 
 IMPORTANT NOTE:
@@ -68,7 +94,7 @@ unexpected behaviour. Try accurate unit values if issues occur.
 
 Legal Information
 -----------------
-Net Information Viewer (bsui) is Copyright (c) 2024 Aidan Holmes
+Net Information Viewer (bsui) is Copyright (c) 2026 Aidan Holmes
 
 Redistribution and use of the binaries are permitted as long as the 
 file names are retained, binaries are unmodifed 

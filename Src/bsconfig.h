@@ -4,7 +4,7 @@
 #include <exec/types.h>
 
 
-#define NUM_TOKENS 7
+#define NUM_TOKENS 9
 
 struct BlueScsiConfig
 {
@@ -21,6 +21,8 @@ struct BlueScsiConfig
 	UWORD autoConnect;
 	char ssid[64];
 	char key[64];
+	UWORD datasize;
+	UWORD debug;
 };
 
 BOOL initBlueSCSIConfig(struct BlueScsiConfig *conf);

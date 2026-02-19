@@ -227,9 +227,14 @@ BOOL query_inquiry_dayna(struct blueWifi *bw)
 	ULONG length = 64;
 	static UBYTE Inquiry[]={ 0x12,0,0,0,64,0 };
 	BOOL ret = TRUE ;
+	bw->version = 0 ;
 		
 	if ((ret = directSCSI(bw->ior, Inquiry, sizeof(Inquiry), buffer, &length, FALSE))){
 		if (memcmp(&buffer[8],"Dayna", 5) == 0){
+			return TRUE ;
+		}
+		if (memcmp(&buffer[8], "AmigaNET", 8) == 0){
+			bw->version = 1;
 			return TRUE ;
 		}
 	}
@@ -259,13 +264,15 @@ BOOL query_macaddress(struct blueWifi *bw)
 	static UBYTE MacAddress2[]={ SCSI_NETWORK_WIFI_CMD, SCSI_NETWORK_WIFI_OPT_GETMACADDRESS,0,0,0,0};
 	static UBYTE MacAddress[]={ SCSI_NETWORK_WIFI_GETMACADDRESS, 0,0,0,0,0};
 	
-	len= 18;
-	ret = directSCSI(bw->ior, MacAddress, sizeof(MacAddress), MAC, &len, FALSE);
-	
-	if (ret){
-		// data ok
-		memcpy(bw->mac, MAC, 6) ;
-		return ret;
+	if (bw->version == 0){
+		len= 18;
+		ret = directSCSI(bw->ior, MacAddress, sizeof(MacAddress), MAC, &len, FALSE);
+		
+		if (ret){
+			// data ok
+			memcpy(bw->mac, MAC, 6) ;
+			return ret;
+		}
 	}
 	
 	len= 6;
