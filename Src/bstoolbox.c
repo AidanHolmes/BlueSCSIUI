@@ -455,7 +455,6 @@ BOOL wifi_connect(struct blueWifi *bw, char *szSSID, char *szKey)
 	int i = 0;
 	struct SCSIWifiJoin wifiap;
 	const int retries = 5;
-	struct SCSIWifiInfo info ;
 	static UBYTE WifiJoin[]={ SCSI_NETWORK_WIFI_CMD, SCSI_NETWORK_WIFI_OPT_JOIN,0,0,0,0};
 	
 	WifiJoin[3] = sizeof(struct SCSIWifiJoin) >> 8;
@@ -483,7 +482,7 @@ BOOL wifi_connect(struct blueWifi *bw, char *szSSID, char *szKey)
 		if (!(ret=wifi_networkinfo(bw))){
 			goto wifiexit;
 		}
-		if (info.SSID[0] != '\0'){
+		if (bw->info.SSID[0] != '\0'){
 			break;
 		}
 	}

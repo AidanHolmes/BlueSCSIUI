@@ -3,7 +3,7 @@ Kurz: BlueSCSI Net Info Viewer
 Uploader: amiga@aidanholmes.co.uk (Aidan Holmes)
 Author: amiga@aidanholmes.co.uk (Aidan Holmes)
 Type: comm/net
-Version: 1.1
+Version: 1.2
 Requires: BlueSCSIv2
 Architecture: m68k-amigaos >= v36
 Distribution: NA
@@ -83,6 +83,8 @@ Versions
 				   Config options access more obvious through use of button.
 				   Config for device and unit now taken from configuration
 				   file.
+1.2 - 23 Feb 2026: Issue fixed with connecting to wireless AP. It would always
+                   say it failed and then connect. Now it works.
 
 
 IMPORTANT NOTE:

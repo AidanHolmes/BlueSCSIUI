@@ -68,10 +68,15 @@ $(DEBUG): $(TEMPLATEMAKEFILE) makefile
 	splat -o "^BUILD.+\$" "BUILD = Debug" $(DEBUG)
 	splat -o "^APPNAME.+\$" "APPNAME = $(APPNAME)" $(DEBUG)
 	
-$(APPNAME).lha: $(RELEASE)
+$(APPNAME).lha: $(RELEASE) $(APPNAME)/$(BINNAME) $(APPNAME)/$(APPNAME).readme
+	lha -Qr -x u $(APPNAME).lha $(APPNAME)
+	
+$(APPNAME)/$(APPNAME).readme:
+
+$(APPNAME)/$(BINNAME):
 	execute <<
 		cd $(RELEASEDIR)
 		smake lib VERSIONMAJOR=$(VERSIONMAJOR) VERSIONMINOR=$(VERSIONMINOR) DEVDATE=$(DEVDATE) APPNAME=$(APPNAME) BINNAME=$(BINNAME)
 		cd /
 		<
-	lha -Qr -x u $(APPNAME).lha $(APPNAME)
+		
